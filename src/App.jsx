@@ -15,8 +15,8 @@ const COLORS = ["#1E3A5F","#7B3F00","#1A4731","#4A1942","#374151","#5C3317","#0D
 
 // Etichette centralizzate — modifica qui per aggiornare tutto il tool
 const L = {
-  x: { key: "rilevanza", label: "Rilevanza per il business dimar", short: "Business", desc: "Stima il valore aggiunto lato business per dimar" },
-  y: { key: "aspettativa", label: "Rilevanza per l'utente", short: "Utente", desc: "Stima il valore aggiunto per l'utente finale" },
+  x: { key: "rilevanza", label: "Rilevanza per l'utente", axisLabel: "Rilevanza per l'utente", voteLabel: "Utente: Rilevanza per l'utente", short: "Utente", desc: "" },
+  y: { key: "aspettativa", label: "Rilevanza per il business", axisLabel: "Rilevanza per il business", voteLabel: "Dimar: Rilevanza per il business", short: "Business", desc: "" },
 };
 
 function scheduleIdeas(ids, cfg) {
@@ -307,10 +307,9 @@ export default function App() {
                       <div key={idea.id} style={{ ...card, borderLeft: `3px solid ${col}`, paddingLeft: 15 }}>
                         <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 16 }}>{idea.name}</div>
                         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                          {[[L.x.key, L.x.label, L.x.desc],[L.y.key, L.y.label, L.y.desc]].map(([key, label, desc]) => (
+                          {[[L.x.key, L.x.voteLabel],[L.y.key, L.y.voteLabel]].map(([key, label]) => (
                             <div key={key}>
-                              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 2 }}>{label}</div>
-                              <div style={{ fontSize: 12, color: C.muted, marginBottom: 10 }}>{desc}</div>
+                              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 10 }}>{label}</div>
                               <div style={{ display: "flex", gap: 6 }}>
                                 {[1,2,3,4,5].map(n => {
                                   const sel = curVotes[idea.id]?.[key] === n;
@@ -339,7 +338,7 @@ export default function App() {
             ? <div style={{ textAlign: "center", padding: "44px 0", color: C.muted, fontSize: 13, border: `1px dashed ${C.border}`, borderRadius: 8 }}>Nessun voto ancora.</div>
             : <>
               <div style={card}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginBottom: 20 }}>
+                <div style={{ display: "none" }}>
                   {[
                     ["Priorità", `Alta ${L.x.short} + Alta ${L.y.short}`, "#F0FDF4","#166534"],
                     ["Da esplorare", `Alta ${L.x.short} + Bassa ${L.y.short}`, "#EFF6FF","#1E40AF"],
@@ -356,9 +355,9 @@ export default function App() {
                   <ScatterChart margin={{ top: 12, right: 16, bottom: 28, left: 0 }}>
                     <CartesianGrid strokeDasharray="2 4" stroke="#EBEBEB" />
                     <XAxis type="number" dataKey="x" domain={[0.5,5.5]} ticks={[1,2,3,4,5]} name={L.x.label}
-                      label={{ value: L.x.short, position: "insideBottom", offset: -12, style: { fill: C.muted, fontSize: 11 } }} tick={{ fontSize: 10, fill: C.faint }} />
+                      label={{ value: L.x.axisLabel, position: "insideBottom", offset: -12, style: { fill: C.muted, fontSize: 11 } }} tick={{ fontSize: 10, fill: C.faint }} />
                     <YAxis type="number" dataKey="y" domain={[0.5,5.5]} ticks={[1,2,3,4,5]} name={L.y.label}
-                      label={{ value: L.y.short, angle: -90, position: "insideLeft", offset: 14, style: { fill: C.muted, fontSize: 11 } }} tick={{ fontSize: 10, fill: C.faint }} />
+                      label={{ value: L.y.axisLabel, angle: -90, position: "insideLeft", offset: 14, style: { fill: C.muted, fontSize: 11 } }} tick={{ fontSize: 10, fill: C.faint }} />
                     <Tooltip content={({ active, payload }) => {
                       if (!active || !payload?.length) return null;
                       const d = payload[0].payload;
