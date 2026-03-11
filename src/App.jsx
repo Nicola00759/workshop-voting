@@ -339,17 +339,6 @@ export default function App() {
             : <>
               <div style={card}>
                 <div style={{ display: "none" }}>
-                  {[
-                    ["Priorità", `Alta ${L.x.short} + Alta ${L.y.short}`, "#F0FDF4","#166534"],
-                    ["Da esplorare", `Alta ${L.x.short} + Bassa ${L.y.short}`, "#EFF6FF","#1E40AF"],
-                    ["Rischioso", `Bassa ${L.x.short} + Alta ${L.y.short}`, "#FEFCE8","#854D0E"],
-                    ["Bassa priorità", `Bassa ${L.x.short} + Bassa ${L.y.short}`, "#FEF9F9","#9B1C1C"]
-                  ].map(([t,d,bg,tc]) => (
-                    <div key={t} style={{ background: bg, borderRadius: 6, padding: "8px 10px" }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: tc, marginBottom: 2 }}>{t}</div>
-                      <div style={{ fontSize: 10, color: C.muted }}>{d}</div>
-                    </div>
-                  ))}
                 </div>
                 <ResponsiveContainer width="100%" height={300}>
                   <ScatterChart margin={{ top: 12, right: 16, bottom: 28, left: 0 }}>
