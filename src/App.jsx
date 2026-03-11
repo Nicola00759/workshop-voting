@@ -106,8 +106,13 @@ export default function App() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const [isParticipant, setIsParticipant] = useState(false);
+
   useEffect(() => {
-    if (window.location.hash === "#vote") setView("vote");
+    if (window.location.hash === "#vote") {
+      setView("vote");
+      setIsParticipant(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -207,7 +212,9 @@ export default function App() {
           <span style={{ fontSize: 11, color: C.faint, whiteSpace: "nowrap" }}>{ideas.length} idee · {uniqueP.length} part.</span>
         </div>
         <nav style={{ display: "flex", overflowX: "auto", borderTop: `1px solid ${C.border}`, WebkitOverflowScrolling: "touch" }}>
-          {[["admin","Admin"],["vote","Vota"],["results","Risultati"],["roadmap","Roadmap"]].map(([v, l]) => (
+          {[["admin","Admin"],["vote","Vota"],["results","Risultati"],["roadmap","Roadmap"]]
+            .filter(([v]) => isParticipant ? ["vote","results"].includes(v) : true)
+            .map(([v, l]) => (
             <button key={v} onClick={() => { setView(v); setSubmitted(false); }}
               style={{ flex: "0 0 auto", padding: "0 20px", height: 44, border: "none", borderBottom: view === v ? `2px solid ${C.text}` : "2px solid transparent", background: "transparent", color: view === v ? C.text : C.muted, fontSize: 13, fontWeight: view === v ? 600 : 400, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
               {l}
