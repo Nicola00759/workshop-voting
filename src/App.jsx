@@ -13,6 +13,12 @@ const C = {
 };
 const COLORS = ["#1E3A5F","#7B3F00","#1A4731","#4A1942","#374151","#5C3317","#0D3B66","#4B3832"];
 
+// Etichette centralizzate — modifica qui per aggiornare tutto il tool
+const L = {
+  x: { key: "rilevanza", label: "Rilevanza per il business dimar", short: "Business", desc: "Stima il valore aggiunto lato business per dimar" },
+  y: { key: "aspettativa", label: "Rilevanza per l'utente", short: "Utente", desc: "Stima il valore aggiunto per l'utente finale" },
+};
+
 function scheduleIdeas(ids, cfg) {
   const starts = {}, visited = new Set();
   const visit = (id, depth = 0) => {
@@ -105,7 +111,6 @@ export default function App() {
   const [submitted, setSubmitted] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const [loading, setLoading] = useState(true);
-
   const [isParticipant, setIsParticipant] = useState(false);
 
   useEffect(() => {
@@ -205,7 +210,6 @@ export default function App() {
   return (
     <div style={{ fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif", minHeight: "100vh", background: C.bg, color: C.text }}>
 
-      {/* Header — scrollable nav on mobile */}
       <div style={{ background: C.surface, borderBottom: `1px solid ${C.border}`, position: "sticky", top: 0, zIndex: 10 }}>
         <div style={{ padding: "0 16px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 48 }}>
           <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: "-0.01em", whiteSpace: "nowrap" }}>Workshop Voting</span>
@@ -228,7 +232,6 @@ export default function App() {
         {/* ── ADMIN ── */}
         {view === "admin" && <>
           <h2 style={{ fontSize: 16, fontWeight: 600, margin: "0 0 16px" }}>Gestione idee</h2>
-
           <div style={{ ...card, background: C.text, border: "none" }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: "white", marginBottom: 6 }}>Link e QR Code per i partecipanti</div>
             <div style={{ fontSize: 12, color: "rgba(255,255,255,0.55)", lineHeight: 1.6, marginBottom: 12 }}>
@@ -239,7 +242,6 @@ export default function App() {
               <img src={qrUrl} alt="QR Code" style={{ width: 120, height: 120, borderRadius: 6, flexShrink: 0 }} />
             </div>
           </div>
-
           <div style={card}>
             <label style={lbl}>Nuova idea</label>
             <div style={{ display: "flex", gap: 8 }}>
@@ -247,7 +249,6 @@ export default function App() {
               <button onClick={addIdea} style={{ ...btn("primary"), whiteSpace: "nowrap", flexShrink: 0 }}>Aggiungi</button>
             </div>
           </div>
-
           {ideas.length === 0
             ? <div style={{ textAlign: "center", padding: "40px 0", color: C.muted, fontSize: 13, border: `1px dashed ${C.border}`, borderRadius: 8 }}>Nessuna idea. Inizia aggiungendone alcune.</div>
             : <div style={card}>
@@ -264,7 +265,6 @@ export default function App() {
                 );
               })}
             </div>}
-
           {votesFlat.length > 0 && (
             <div style={{ ...card, background: "#FEF9F9", border: `1px solid #FED7D7` }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: C.danger, marginBottom: 4 }}>Reset voti</div>
@@ -291,22 +291,23 @@ export default function App() {
             </div>
             : <>
               <h2 style={{ fontSize: 16, fontWeight: 600, margin: "0 0 4px" }}>Scheda di votazione</h2>
-              <p style={{ fontSize: 13, color: C.muted, margin: "0 0 18px" }}>Valuta ogni idea da 1 (basso) a 5 (alto).</p>
+              <p style={{ fontSize: 13, color: C.muted, margin: "0 0 18px" }}>
+                Per ogni idea, esprimi una valutazione da 1 (basso) a 5 (alto) su entrambe le dimensioni.
+              </p>
               <div style={card}>
                 <label style={lbl}>Il tuo nome</label>
                 <input value={participant} onChange={e => setParticipant(e.target.value)} placeholder="Nome e cognome" style={inp} />
               </div>
               {ideas.length === 0
-                ? <div style={{ color: C.muted, fontSize: 13, padding: 24, textAlign: "center" }}>Nessuna idea disponibile.</div>
+                ? <div style={{ color: C.muted, fontSize: 13, padding: 24, textAlign: "center" }}>Nessuna idea disponibile. Attendi che il facilitatore le inserisca.</div>
                 : <>
                   {ideas.map((idea, i) => {
                     const col = COLORS[i % COLORS.length];
                     return (
                       <div key={idea.id} style={{ ...card, borderLeft: `3px solid ${col}`, paddingLeft: 15 }}>
                         <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 16 }}>{idea.name}</div>
-                        {/* Stack vertically on mobile */}
-                        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                          {[["rilevanza","Rilevanza","Pertinenza agli obiettivi"],["aspettativa","Aspettativa","Probabilità di risultati concreti"]].map(([key, label, desc]) => (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                          {[[L.x.key, L.x.label, L.x.desc],[L.y.key, L.y.label, L.y.desc]].map(([key, label, desc]) => (
                             <div key={key}>
                               <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 2 }}>{label}</div>
                               <div style={{ fontSize: 12, color: C.muted, marginBottom: 10 }}>{desc}</div>
@@ -339,7 +340,12 @@ export default function App() {
             : <>
               <div style={card}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginBottom: 20 }}>
-                  {[["Priorità","Alta rile. + Alta asp.","#F0FDF4","#166534"],["Da esplorare","Alta rile. + Bassa asp.","#EFF6FF","#1E40AF"],["Rischioso","Bassa rile. + Alta asp.","#FEFCE8","#854D0E"],["Bassa priorità","Bassa rile. + Bassa asp.","#FEF9F9","#9B1C1C"]].map(([t,d,bg,tc]) => (
+                  {[
+                    ["Priorità", `Alta ${L.x.short} + Alta ${L.y.short}`, "#F0FDF4","#166534"],
+                    ["Da esplorare", `Alta ${L.x.short} + Bassa ${L.y.short}`, "#EFF6FF","#1E40AF"],
+                    ["Rischioso", `Bassa ${L.x.short} + Alta ${L.y.short}`, "#FEFCE8","#854D0E"],
+                    ["Bassa priorità", `Bassa ${L.x.short} + Bassa ${L.y.short}`, "#FEF9F9","#9B1C1C"]
+                  ].map(([t,d,bg,tc]) => (
                     <div key={t} style={{ background: bg, borderRadius: 6, padding: "8px 10px" }}>
                       <div style={{ fontSize: 11, fontWeight: 600, color: tc, marginBottom: 2 }}>{t}</div>
                       <div style={{ fontSize: 10, color: C.muted }}>{d}</div>
@@ -349,17 +355,17 @@ export default function App() {
                 <ResponsiveContainer width="100%" height={300}>
                   <ScatterChart margin={{ top: 12, right: 16, bottom: 28, left: 0 }}>
                     <CartesianGrid strokeDasharray="2 4" stroke="#EBEBEB" />
-                    <XAxis type="number" dataKey="x" domain={[0.5,5.5]} ticks={[1,2,3,4,5]} name="Rilevanza"
-                      label={{ value: "Rilevanza", position: "insideBottom", offset: -12, style: { fill: C.muted, fontSize: 11 } }} tick={{ fontSize: 10, fill: C.faint }} />
-                    <YAxis type="number" dataKey="y" domain={[0.5,5.5]} ticks={[1,2,3,4,5]} name="Aspettativa"
-                      label={{ value: "Aspettativa", angle: -90, position: "insideLeft", offset: 14, style: { fill: C.muted, fontSize: 11 } }} tick={{ fontSize: 10, fill: C.faint }} />
+                    <XAxis type="number" dataKey="x" domain={[0.5,5.5]} ticks={[1,2,3,4,5]} name={L.x.label}
+                      label={{ value: L.x.short, position: "insideBottom", offset: -12, style: { fill: C.muted, fontSize: 11 } }} tick={{ fontSize: 10, fill: C.faint }} />
+                    <YAxis type="number" dataKey="y" domain={[0.5,5.5]} ticks={[1,2,3,4,5]} name={L.y.label}
+                      label={{ value: L.y.short, angle: -90, position: "insideLeft", offset: 14, style: { fill: C.muted, fontSize: 11 } }} tick={{ fontSize: 10, fill: C.faint }} />
                     <Tooltip content={({ active, payload }) => {
                       if (!active || !payload?.length) return null;
                       const d = payload[0].payload;
                       return <div style={{ background: C.surface, border: `1px solid ${C.border}`, padding: "10px 14px", borderRadius: 6, fontSize: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.07)" }}>
                         <div style={{ fontWeight: 600, color: d.color, marginBottom: 6 }}>{d.name}</div>
-                        <div style={{ color: C.muted }}>Rilevanza: <b style={{ color: C.text }}>{d.x}</b></div>
-                        <div style={{ color: C.muted }}>Aspettativa: <b style={{ color: C.text }}>{d.y}</b></div>
+                        <div style={{ color: C.muted }}>{L.x.label}: <b style={{ color: C.text }}>{d.x}</b></div>
+                        <div style={{ color: C.muted }}>{L.y.label}: <b style={{ color: C.text }}>{d.y}</b></div>
                         <div style={{ color: C.faint, marginTop: 4, fontSize: 11 }}>{d.votes} voto/i</div>
                       </div>;
                     }} />
@@ -383,10 +389,14 @@ export default function App() {
                     <span style={{ width: 22, fontSize: 12, fontWeight: 600, color: i < 3 ? C.text : C.faint }}>{i + 1}</span>
                     <div style={{ width: 8, height: 8, borderRadius: "50%", background: d.color, marginRight: 10 }} />
                     <span style={{ flex: 1, fontSize: 13 }}>{d.name}</span>
-                    <span style={{ fontSize: 11, color: C.muted, marginRight: 10 }}>R{d.x} A{d.y}</span>
+                    <span style={{ fontSize: 11, color: C.muted, marginRight: 10 }}>B {d.x} · U {d.y}</span>
                     <span style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{Math.round((d.x + d.y) * 10) / 10}</span>
                   </div>
                 ))}
+                <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${C.border}`, display: "flex", gap: 16 }}>
+                  <span style={{ fontSize: 11, color: C.faint }}>B = {L.x.label}</span>
+                  <span style={{ fontSize: 11, color: C.faint }}>U = {L.y.label}</span>
+                </div>
               </div>
               <div style={card}>
                 <label style={lbl}>Partecipanti ({uniqueP.length})</label>
@@ -405,7 +415,7 @@ export default function App() {
             : <>
               <div style={card}>
                 <label style={lbl}>Seleziona le idee da pianificare (max 5)</label>
-                <div style={{ fontSize: 12, color: C.muted, marginBottom: 12 }}>Ordinate per punteggio.</div>
+                <div style={{ fontSize: 12, color: C.muted, marginBottom: 12 }}>Ordinate per punteggio complessivo.</div>
                 {sortedData.map((d, i) => {
                   const isSel = !!roadmap[d.id]?.selected, canSel = isSel || selectedIds.length < 5;
                   return (
@@ -413,7 +423,7 @@ export default function App() {
                       <input type="checkbox" checked={isSel} onChange={() => canSel && toggleSelect(d.id)} style={{ marginRight: 10, cursor: canSel ? "pointer" : "not-allowed", accentColor: C.text, width: 16, height: 16 }} />
                       <div style={{ width: 8, height: 8, borderRadius: "50%", background: d.color, marginRight: 10 }} />
                       <span style={{ flex: 1, fontSize: 13 }}>{d.name}</span>
-                      <span style={{ fontSize: 11, color: C.faint }}>{Math.round((d.x + d.y) * 10) / 10}</span>
+                      <span style={{ fontSize: 11, color: C.faint }}>B {d.x} · U {d.y} · {Math.round((d.x + d.y) * 10) / 10}</span>
                     </div>
                   );
                 })}
